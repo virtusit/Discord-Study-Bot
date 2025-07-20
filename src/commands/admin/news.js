@@ -12,27 +12,31 @@ module.exports = {
             option.setName('topic')
                 .setDescription('Enter the topic to be sent')
                 .setRequired(true))
-        .addIntegerOption(option => // Adiciona um parâmetro de número inteiro para o número de notícias a serem retornadas
+        .addIntegerOption(option => 
             option.setName('quantity')
                 .setDescription('Set the quantity to be sent (1-5)')
                 .setRequired(false)),
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         const topic = interaction.options.getString('topic');
-        const quantity = interaction.options.getInteger('quantity') || 1; // Define o valor padrão para 1 se o parâmetro não for fornecido ou for inválido
-        if (quantity < 1 || quantity > 5) { // Verifica se o valor fornecido está dentro do intervalo válido
-            interaction.editReply('You can only set1 - 5');
-            return;
+        const quantity = interaction.options.getInteger('quantity') || 1;
+
+        // Validação antes do deferReply
+        if (quantity < 1 || quantity > 5) {
+            return interaction.reply({
+                content: 'You can only set a value between 1 and 5.',
+                ephemeral: true
+            });
         }
+
+        await interaction.deferReply();
 
         newsapi.v2.everything({
             q: topic,
             language: 'pt',
             sortBy: 'publishedAt'
         }).then(response => {
-            const articles = response.articles.slice(0, quantity); // Usa o parâmetro de quantidade para definir o número de notícias a serem retornadas
+            const articles = response.articles.slice(0, quantity);
             if (articles.length === 0) {
                 interaction.editReply(`No news about ${topic}.`);
                 return;

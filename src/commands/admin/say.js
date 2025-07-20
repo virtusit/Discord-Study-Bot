@@ -15,7 +15,7 @@ module.exports = {
         const message = interaction.options.getString('message');
         await interaction.reply({
             content: message,
-            ephemeral: true // Define como true para evitar spam visível. Pode ser alterado se necessário.
+            ephemeral: true // Define como true para evitar spam visível. Pode ser alterado se necessário...
         });
     },
 };
